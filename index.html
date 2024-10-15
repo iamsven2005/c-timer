@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASM Timer and Stopwatch</title>
+    <script>
+        // Define the Module object and wait for it to initialize
+        var Module = {
+            onRuntimeInitialized: function () {
+                // Now that the runtime is initialized, wrap the WebAssembly functions
+                var startTimer = Module.cwrap('start_timer', 'void', []);
+                var stopTimer = Module.cwrap('stop_timer', 'void', []);
+                var getElapsedTime = Module.cwrap('get_elapsed_time', 'number', []);
+
+                // Define the JS functions that interact with the wrapped WASM functions
+                window.startTimer = function() {
+                    startTimer();
+                    console.log('Timer started');
+                };
+
+                window.stopTimer = function() {
+                    stopTimer();
+                    console.log('Timer stopped');
+                };
+
+                window.showElapsedTime = function() {
+                    var elapsedTime = getElapsedTime();
+                    document.getElementById('elapsed-time').innerText = 'Elapsed time: ' + elapsedTime + ' seconds';
+                    console.log('Elapsed time: ' + elapsedTime + ' seconds');
+                };
+            }
+        };
+    </script>
+    <script src="timer.js"></script> <!-- Ensure the correct WASM JS file is referenced -->
+</head>
+<body>
+    <h1>WebAssembly Timer and Stopwatch</h1>
+    <button onclick="startTimer()">Start Timer</button>
+    <button onclick="stopTimer()">Stop Timer</button>
+    <button onclick="showElapsedTime()">Show Elapsed Time</button>
+    <p id="elapsed-time">Elapsed time: 0 seconds</p>
+</body>
+</html>
