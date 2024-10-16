@@ -1,44 +1,98 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WASM Timer and Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        button {
+            background-color: #3498db;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #elapsed-time {
+            font-size: 18px;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
     <script>
-        // Define the Module object and wait for it to initialize
         var Module = {
             onRuntimeInitialized: function () {
-                // Now that the runtime is initialized, wrap the WebAssembly functions
+                // Wrap the C functions to JavaScript using cwrap
                 var startTimer = Module.cwrap('start_timer', 'void', []);
                 var stopTimer = Module.cwrap('stop_timer', 'void', []);
                 var getElapsedTime = Module.cwrap('get_elapsed_time', 'number', []);
 
-                // Define the JS functions that interact with the wrapped WASM functions
-                window.startTimer = function() {
+                // Start timer button
+                window.startTimer = function () {
                     startTimer();
-                    console.log('Timer started');
+                    alert("Timer started");
                 };
 
-                window.stopTimer = function() {
+                // Stop timer button
+                window.stopTimer = function () {
                     stopTimer();
-                    console.log('Timer stopped');
+                    alert("Timer stopped");
                 };
 
-                window.showElapsedTime = function() {
+                // Show elapsed time without stopping the timer
+                window.showElapsedTime = function () {
                     var elapsedTime = getElapsedTime();
-                    document.getElementById('elapsed-time').innerText = 'Elapsed time: ' + elapsedTime + ' seconds';
-                    console.log('Elapsed time: ' + elapsedTime + ' seconds');
+                    if (elapsedTime !== -1) {
+                        document.getElementById('elapsed-time').innerText = 'Elapsed time: ' + elapsedTime + ' seconds';
+                        alert('Elapsed time: ' + elapsedTime + ' seconds');
+                    } else {
+                        alert('Timer is not running');
+                    }
                 };
             }
         };
     </script>
-    <script src="timer.js"></script> <!-- Ensure the correct WASM JS file is referenced -->
+    <script src="timer.js"></script> <!-- Reference the WASM JS file -->
 </head>
 <body>
-    <h1>WebAssembly Timer and Stopwatch</h1>
-    <button onclick="startTimer()">Start Timer</button>
-    <button onclick="stopTimer()">Stop Timer</button>
-    <button onclick="showElapsedTime()">Show Elapsed Time</button>
-    <p id="elapsed-time">Elapsed time: 0 seconds</p>
+    <div class="container">
+        <h1>WebAssembly Timer and Stopwatch</h1>
+        <button onclick="startTimer()">Start Timer</button>
+        <button onclick="stopTimer()">Stop Timer</button>
+        <button onclick="showElapsedTime()">Show Elapsed Time</button>
+        <p id="elapsed-time">See the console for the elasped time</p>
+    </div>
 </body>
 </html>
+
+
